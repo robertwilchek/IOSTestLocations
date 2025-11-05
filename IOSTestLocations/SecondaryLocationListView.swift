@@ -10,7 +10,8 @@ struct SecondaryLocationListView: View {
             authorizationStatus: store.authorizationStatus,
             lastError: store.lastErrorMessage,
             captureAction: store.captureSecondaryLocation,
-            refreshAuthorization: store.refreshAuthorizationStatus
+            refreshAuthorization: store.refreshAuthorizationStatus,
+            liveLocation: store.liveLocation
         )
         .navigationTitle("Secondary")
     }
