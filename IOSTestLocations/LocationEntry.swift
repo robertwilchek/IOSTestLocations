@@ -31,4 +31,10 @@ struct LocationEntry: Identifiable {
         }
         return String(format: "%.5f, %.5f %@", latitude, longitude, accuracyText)
     }
+
+    var formattedRelativeTimestamp: String {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .named
+        return formatter.localizedString(for: timestamp, relativeTo: Date())
+    }
 }

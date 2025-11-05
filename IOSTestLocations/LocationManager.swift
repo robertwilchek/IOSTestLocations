@@ -18,8 +18,11 @@ final class LocationManager: NSObject, CLLocationManagerDelegate {
     private let manager: CLLocationManager
     private var completion: ((Result<CLLocation, Error>) -> Void)?
 
+    private(set) var latestLocation: CLLocation?
+
     var authorizationHandler: ((CLAuthorizationStatus) -> Void)?
     var errorHandler: ((Error) -> Void)?
+    var locationUpdateHandler: ((CLLocation) -> Void)?
 
     var authorizationStatus: CLAuthorizationStatus {
         manager.authorizationStatus
@@ -30,6 +33,14 @@ final class LocationManager: NSObject, CLLocationManagerDelegate {
         super.init()
         self.manager.delegate = self
         self.manager.desiredAccuracy = kCLLocationAccuracyBest
+    }
+
+    func startContinuousUpdates() {
+        manager.startUpdatingLocation()
+    }
+
+    func stopContinuousUpdates() {
+        manager.stopUpdatingLocation()
     }
 
     func requestAuthorizationIfNeeded() {
@@ -63,6 +74,8 @@ final class LocationManager: NSObject, CLLocationManagerDelegate {
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let location = locations.last {
+            latestLocation = location
+            locationUpdateHandler?(location)
             completion?(.success(location))
         }
         completion = nil

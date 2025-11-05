@@ -8,12 +8,17 @@ struct LocationListView: View {
     let lastError: String?
     let captureAction: () -> Void
     let refreshAuthorization: () -> Void
+    let liveLocation: LocationEntry?
 
     var body: some View {
         List {
             Section(header: Text(title)) {
                 authorizationBanner
                     .font(.subheadline)
+
+                if [.authorizedAlways, .authorizedWhenInUse].contains(authorizationStatus) {
+                    liveLocationView
+                }
 
                 Button(action: captureAction) {
                     Label("Capture Current Location", systemImage: "location.fill")
@@ -77,6 +82,27 @@ struct LocationListView: View {
             EmptyView()
         }
     }
+
+    @ViewBuilder
+    private var liveLocationView: some View {
+        if let liveLocation {
+            VStack(alignment: .leading, spacing: 4) {
+                Label("Live location", systemImage: "dot.radiowaves.left.and.right")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                Text(liveLocation.formattedCoordinate)
+                    .font(.headline)
+                Text("Updated \(liveLocation.formattedRelativeTimestamp)")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            .padding(.vertical, 4)
+        } else {
+            Label("Waiting for the most accurate reading…", systemImage: "hourglass")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+    }
 }
 
 struct LocationListView_Previews: PreviewProvider {
@@ -90,7 +116,8 @@ struct LocationListView_Previews: PreviewProvider {
                 authorizationStatus: .authorizedWhenInUse,
                 lastError: nil,
                 captureAction: {},
-                refreshAuthorization: {}
+                refreshAuthorization: {},
+                liveLocation: LocationEntry(location: CLLocation(latitude: 37.3349, longitude: -122.0090))
             )
         }
     }
